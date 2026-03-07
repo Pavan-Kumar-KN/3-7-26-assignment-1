@@ -26,10 +26,10 @@ function StudentForm({
   initialData,
   isLoading,
 }: StudentFormProps) {
-  const [formData, setFormData] = React.useState<Student>({
+  const [formData, setFormData] = React.useState<StudentFormData>({
     name: "",
     email: "",
-    age: 0,
+    age: "",
   })
   const [errors, setErrors] = React.useState<Partial<StudentFormData>>({});
   
@@ -40,10 +40,10 @@ function StudentForm({
       setFormData({
         name: initialData.name,
         email: initialData.email,
-        age: initialData.age,
+        age: initialData.age.toString(),
       })
     } else {
-      setFormData({ name: "", email: "", age: 0 })
+      setFormData({ name: "", email: "", age: "" })
     }
     setErrors({})
   }, [initialData, open])
@@ -66,10 +66,13 @@ function StudentForm({
       newErrors.email = "Please enter a valid email address"
     }
 
-    if (formData.age === 0) {
+    if (!formData.age || formData.age.trim() === "") {
       newErrors.age = "Age is required"
-    } else if (isNaN(Number(formData.age)) || Number(formData.age) < 1 || Number(formData.age) > 120) {
-      newErrors.age = "Please enter a valid age (1-120)"
+    } else {
+      const parsedAge = Number(formData.age);
+      if (isNaN(parsedAge) || parsedAge < 1 || parsedAge > 120) {
+        newErrors.age = "Please enter a valid age (1-120)"
+      }
     }
 
     setErrors(newErrors)
@@ -79,11 +82,17 @@ function StudentForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (validate()) {
+      const studentData: Student = {
+        name: formData.name,
+        email: formData.email,
+        age: Number(formData.age),
+      }
+
       if (initialData && initialData.id) {
-        updateStudent(initialData?.id, { ...formData, id: initialData.id })
+        updateStudent(initialData.id, { ...studentData, id: initialData.id })
       } else {
-        const id = students.length + 1;
-        addStudent({ ...formData, id })
+        const id = students.length > 0 ? Math.max(...students.map(s => s.id || 0)) + 1 : 1;
+        addStudent({ ...studentData, id })
       }
       onOpenChange(false)
     }

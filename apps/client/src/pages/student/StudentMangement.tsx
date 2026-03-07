@@ -64,7 +64,7 @@ function StudentManagement() {
   
 
   return (
-    <div className="min-h-screen bg-background px-30">
+    <div className="min-h-screen bg-background px-4 sm:px-6 lg:px-8">
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         {/* Stats Cards */}
