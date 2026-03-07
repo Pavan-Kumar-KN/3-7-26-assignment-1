@@ -7,7 +7,6 @@ import { useStudentStore } from "@/store/useStudentStore";
 import StatCard from "@/components/features/cards/StatCard";
 import StudentForm from "@/components/features/StudentForm";
 import { useSearchStudents } from "@/hooks/useSearch";
-import { useExportData } from "@/hooks/useExportData";
 import ExportSelectionModel from "@/components/features/dailogs/ExportSelectionModel";
 
 function StudentManagement() {
@@ -18,8 +17,9 @@ function StudentManagement() {
   
   const [exportDialogOpen, setExportDialogOpen] = useState(false)
 
-  
-  const { exportFile } = useExportData();
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const ITEMS_PER_PAGE = 10;
 
   // Compute dynamic stats from students data
   const statsData = useMemo(() => {
@@ -61,8 +61,18 @@ function StudentManagement() {
       },
     ];
   }, [students]);
-  
 
+  // Derived state for pagination
+  const totalPages = Math.ceil(filteredStudents.length / ITEMS_PER_PAGE) || 1;
+  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedStudents = filteredStudents.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  // If search changes, reset page to 1
+  useMemo(() => {
+    setCurrentPage(1);
+  }, [searchQuery]);
+  
+  
   return (
     <div className="min-h-screen bg-background px-4 sm:px-6 lg:px-8">
       {/* Main Content */}
@@ -105,13 +115,45 @@ function StudentManagement() {
         {/* Results Info */}
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm text-muted-foreground">
-            Showing <span className="font-medium text-foreground">7</span> of{" "}
-            <span className="font-medium text-foreground">7</span> students
+            Showing <span className="font-medium text-foreground">{filteredStudents.length === 0 ? 0 : startIndex + 1}</span> to{" "}
+            <span className="font-medium text-foreground">
+              {Math.min(startIndex + ITEMS_PER_PAGE, filteredStudents.length)}
+            </span>{" "}
+            of <span className="font-medium text-foreground">{filteredStudents.length}</span> students
           </p>
         </div>
 
-        {/* Table */}
-        <StudentTable students={filteredStudents} />
+        {/* Table container with slight shadow and rounded corners for better aesthetics */}
+        <div className="bg-card rounded-lg border shadow-sm overflow-hidden mb-4">
+          <StudentTable students={paginatedStudents} />
+        </div>
+
+        {/* Pagination Controls */}
+        {filteredStudents.length > 0 && (
+          <div className="flex items-center justify-between py-2">
+            <p className="text-sm text-muted-foreground">
+              Page {currentPage} of {totalPages}
+            </p>
+            <div className="flex space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                disabled={currentPage === 1}
+              >
+                Previous
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                disabled={currentPage === totalPages}
+              >
+                Next
+              </Button>
+            </div>
+          </div>
+        )}
       </main>
       
       {createModelOpen && (

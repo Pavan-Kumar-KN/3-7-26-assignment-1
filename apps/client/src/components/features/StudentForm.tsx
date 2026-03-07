@@ -32,6 +32,7 @@ function StudentForm({
     age: "",
   })
   const [errors, setErrors] = React.useState<Partial<StudentFormData>>({});
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
   
   const { students, addStudent, updateStudent } = useStudentStore((state) => state);
 
@@ -82,19 +83,25 @@ function StudentForm({
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (validate()) {
+      setIsSubmitting(true);
+      
       const studentData: Student = {
         name: formData.name,
         email: formData.email,
         age: Number(formData.age),
       }
 
-      if (initialData && initialData.id) {
-        updateStudent(initialData.id, { ...studentData, id: initialData.id })
-      } else {
-        const id = students.length > 0 ? Math.max(...students.map(s => s.id || 0)) + 1 : 1;
-        addStudent({ ...studentData, id })
-      }
-      onOpenChange(false)
+      // Simulate a network request delay of 1 second
+      setTimeout(() => {
+        if (initialData && initialData.id) {
+          updateStudent(initialData.id, { ...studentData, id: initialData.id })
+        } else {
+          const id = students.length > 0 ? Math.max(...students.map(s => s.id || 0)) + 1 : 1;
+          addStudent({ ...studentData, id })
+        }
+        setIsSubmitting(false);
+        onOpenChange(false)
+      }, 1000);
     }
   }
 
@@ -166,8 +173,8 @@ function StudentForm({
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button className="cursor-pointer" type="submit" disabled={isLoading} onClick={handleSubmit}>
-                {isLoading ? "Saving..." : initialData ? "Update Student" : "Add Student"}
+              <Button className="cursor-pointer" type="submit" disabled={isSubmitting || isLoading} onClick={handleSubmit}>
+                {isSubmitting || isLoading ? "Saving..." : initialData ? "Update Student" : "Add Student"}
               </Button>
             </DialogFooter>
           </form>
