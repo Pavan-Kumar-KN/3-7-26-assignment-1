@@ -18,7 +18,7 @@ import { MoreHorizontalIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { useStudentStore } from "@/store/useStudentStore";
 import { useState } from "react";
-import { DeleteConfirmDialog } from "./DeleteConfirmDialog";
+import { DeleteConfirmDialog } from "@/components/features/dailogs/DeleteConfirmDialog";
 import type { Student } from "@/types/types";
 import { StudentTableSkeleton } from "./StudentTableSkeleton";
 import StudentForm from "@/components/features/StudentForm";

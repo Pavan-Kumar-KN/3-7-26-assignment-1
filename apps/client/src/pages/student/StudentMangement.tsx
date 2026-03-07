@@ -7,12 +7,19 @@ import { useStudentStore } from "@/store/useStudentStore";
 import StatCard from "@/components/features/cards/StatCard";
 import StudentForm from "@/components/features/StudentForm";
 import { useSearchStudents } from "@/hooks/useSearch";
+import { useExportData } from "@/hooks/useExportData";
+import ExportSelectionModel from "@/components/features/dailogs/ExportSelectionModel";
 
 function StudentManagement() {
   const [createModelOpen, setCreateModelOpen] = useState<boolean>(false);
   const students = useStudentStore((state) => state.students);
   
   const { filteredStudents, searchQuery, setSearchQuery } = useSearchStudents();
+  
+  const [exportDialogOpen, setExportDialogOpen] = useState(false)
+
+  
+  const { exportFile } = useExportData();
 
   // Compute dynamic stats from students data
   const statsData = useMemo(() => {
@@ -84,7 +91,7 @@ function StudentManagement() {
             />
           </div>
           <div className="flex gap-2 sm:ml-auto">
-            <Button variant="outline" className="h-10">
+            <Button variant="outline"  className="h-10 cursor-pointer" onClick={() => setExportDialogOpen(true)}>
               <Download className="h-4 w-4 mr-2" />
               Export
             </Button>
@@ -114,8 +121,13 @@ function StudentManagement() {
         initialData={null}
         isLoading={false}
         />
-        
       )}
+      
+      {/* Export Dialog */}
+            <ExportSelectionModel 
+              open={exportDialogOpen} 
+              onOpenChange={setExportDialogOpen} 
+            />
     </div>
   );
 }
