@@ -30,17 +30,17 @@ const ExportSelectionModel = ({ open, onOpenChange }: ExportSelectionModelProps)
   // Reset selection when dialog opens
   React.useEffect(() => {
     if (open) {
-      setSelectedRows(new Set(students.map((s) => s.id))) // Select all by default
+      setSelectedRows(new Set(students.map((s) => String(s.id)))) // Select all by default
     }
   }, [open, students])  
   
-  const selectAll = selectedRows.size ===  students.length > 0
+  const selectAll = selectedRows.size === students.length;
   
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedRows(new Set(students.map((row) => row.id)))
+      setSelectedRows(new Set(students.map((row) => String(row.id))))
     } else {
-      setSelectedRows(new Set())
+      setSelectedRows(new Set())  
     }
   }
   const handleSelectRow = (id: string, checked: boolean) => {
@@ -54,7 +54,7 @@ const ExportSelectionModel = ({ open, onOpenChange }: ExportSelectionModelProps)
   }
   
   const handleExport = () => {
-    const selectedStudents = students.filter((s) => selectedRows.has(s.id))
+    const selectedStudents = students.filter((s) => selectedRows.has(String(s.id)))
     exportFile(selectedStudents)
     onOpenChange(false)
   }
@@ -91,16 +91,16 @@ const ExportSelectionModel = ({ open, onOpenChange }: ExportSelectionModelProps)
               {students.map((row) => (
                 <TableRow
                   key={row.id}
-                  data-state={selectedRows.has(row.id) ? "selected" : undefined}
+                  data-state={selectedRows.has(String(row.id)) ? "selected" : undefined}
                   className="cursor-pointer"
-                  onClick={() => handleSelectRow(row.id, !selectedRows.has(row.id))}
+                  onClick={() => handleSelectRow(String(row.id), !selectedRows.has(String(row.id)))}
                 >
                   <TableCell onClick={(e) => e.stopPropagation()}>
                     <Checkbox
                       id={`row-${row.id}-checkbox`}
                       name={`row-${row.id}-checkbox`}
-                      checked={selectedRows.has(row.id)}
-                      onCheckedChange={(checked) => handleSelectRow(row.id, checked === true)}
+                      checked={selectedRows.has(String(row.id))}
+                      onCheckedChange={(checked) => handleSelectRow(String(row.id), checked === true)}
                     />
                   </TableCell>
                   <TableCell className="font-medium">{row.name}</TableCell>

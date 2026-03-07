@@ -1,5 +1,4 @@
-import { Button } from "@/components/ui/button";
-import { GraduationCap, Moon, Sun } from "lucide-react";
+import { GraduationCap} from "lucide-react";
 
 const Header = () => {
   return (

@@ -85,7 +85,7 @@ function StudentForm({
     if (validate()) {
       setIsSubmitting(true);
       
-      const studentData: Student = {
+      const studentData: Omit<Student, 'id'> = {
         name: formData.name,
         email: formData.email,
         age: Number(formData.age),
@@ -94,9 +94,9 @@ function StudentForm({
       // Simulate a network request delay of 1 second
       setTimeout(() => {
         if (initialData && initialData.id) {
-          updateStudent(initialData.id, { ...studentData, id: initialData.id })
+          updateStudent(Number(initialData.id), { ...studentData, id: Number(initialData.id) })
         } else {
-          const id = students.length > 0 ? Math.max(...students.map(s => s.id || 0)) + 1 : 1;
+          const id = students.length > 0 ? Math.max(...students.map(s => Number(s.id) || 0)) + 1 : 1;
           addStudent({ ...studentData, id })
         }
         setIsSubmitting(false);

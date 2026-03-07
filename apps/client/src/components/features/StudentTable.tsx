@@ -2,7 +2,6 @@ import {
   Table,
   TableBody,
   TableCell,
-  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -40,8 +39,10 @@ function StudentTable({ students }: StudentTableProps) {
   const handleEdit = (id: number) => {
     setUpdateModel(!updateModel);
     
-    const tempStudent: Student = students.find((student) => student.id === id);
-    setSelectedStudent(tempStudent);
+    const tempStudent = students.find((student) => student.id === id);
+    if (tempStudent) {
+      setSelectedStudent(tempStudent);
+    }
   };
 
   const handleDelete = (id: number) => {
@@ -116,7 +117,7 @@ function StudentTable({ students }: StudentTableProps) {
         <DeleteConfirmDialog
           open={open}
           onOpenChange={() => setOpen(!open)}
-          onSubmit={() => removeStudent(selectedStudent.id)}
+          onSubmit={() => removeStudent(Number(selectedStudent.id))}
           studentName={selectedStudent.name}
         />
       )}
