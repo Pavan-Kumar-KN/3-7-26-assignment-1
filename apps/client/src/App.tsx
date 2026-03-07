@@ -1,10 +1,24 @@
-import { Button } from "./components/ui/button";
+import { useEffect } from "react";
+import Layout from "./components/layout/Layout";
+import StudentManagement from "./pages/student/StudentMangement";
+import { useStudentStore } from "./store/useStudentStore";
+import { initialStudents } from "./data/studentsConstant";
 
 const App = () => { 
-  return <div>
-    <h1 className="text-3xl text-red-500">Hello this react app</h1>
-    <Button>shadcn button</Button>
+  const { setStudents } = useStudentStore((state) => state);
+  
+  useEffect(() => {
+    setTimeout(() => {
+      setStudents(initialStudents);
+    }, 1000);
+  }, [])
+  
+  return (<div>
+    <Layout>
+      <StudentManagement />
+    </Layout>
   </div>
+    )
 }
 
 
