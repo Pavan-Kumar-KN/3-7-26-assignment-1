@@ -1,3 +1,4 @@
+import { memo } from "react";
 import {
   Table,
   TableBody,
@@ -17,7 +18,7 @@ import { MoreHorizontalIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { useStudentStore } from "@/store/useStudentStore";
 import { useState } from "react";
-import { DeleteConfirmDialog } from "@/components/features/dailogs/DeleteConfirmDialog";
+import { DeleteConfirmDialog } from "@/components/features/dialogs/DeleteConfirmDialog";
 import type { Student } from "@/types/types";
 import { StudentTableSkeleton } from "./StudentTableSkeleton";
 import StudentForm from "@/components/features/StudentForm";
@@ -26,7 +27,7 @@ interface StudentTableProps {
   students: Student[];
 }
 
-function StudentTable({ students }: StudentTableProps) {
+const StudentTable = memo(function StudentTable({ students }: StudentTableProps) {
   const [open, setOpen] = useState<boolean>(false);
   const [updateModel, setUpdateModel] = useState<boolean>(false);
   
@@ -134,6 +135,6 @@ function StudentTable({ students }: StudentTableProps) {
       }
     </div>
   );
-}
+})
 
 export default StudentTable;

@@ -2,12 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import StudentTable from "@/components/features/StudentTable";
 import { Plus, Search, Download } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useStudentStore } from "@/store/useStudentStore";
 import StatCard from "@/components/features/cards/StatCard";
 import StudentForm from "@/components/features/StudentForm";
 import { useSearchStudents } from "@/hooks/useSearch";
-import ExportSelectionModel from "@/components/features/dailogs/ExportSelectionModel";
+import ExportSelectionModel from "@/components/features/dialogs/ExportSelectionModel";
 
 function StudentManagement() {
   const [createModelOpen, setCreateModelOpen] = useState<boolean>(false);
@@ -62,13 +62,22 @@ function StudentManagement() {
     ];
   }, [students]);
 
-  // Derived state for pagination
-  const totalPages = Math.ceil(filteredStudents.length / ITEMS_PER_PAGE) || 1;
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedStudents = filteredStudents.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  // Memoize expensive calculations
+  const paginatedData = useMemo(() => {
+    const totalPages = Math.ceil(filteredStudents.length / ITEMS_PER_PAGE) || 1;
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const paginatedStudents = filteredStudents.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+    
+    return {
+      totalPages,
+      startIndex,
+      paginatedStudents,
+    };
+  }, [filteredStudents, currentPage, ITEMS_PER_PAGE]);
+
 
   // If search changes, reset page to 1
-  useMemo(() => {
+  useEffect(() => {
     setCurrentPage(1);
   }, [searchQuery]);
   
@@ -115,9 +124,9 @@ function StudentManagement() {
         {/* Results Info */}
         <div className="flex items-center justify-between mb-4">
           <p className="text-sm text-muted-foreground">
-            Showing <span className="font-medium text-foreground">{filteredStudents.length === 0 ? 0 : startIndex + 1}</span> to{" "}
+            Showing <span className="font-medium text-foreground">{filteredStudents.length === 0 ? 0 : paginatedData.startIndex + 1}</span> to{" "}
             <span className="font-medium text-foreground">
-              {Math.min(startIndex + ITEMS_PER_PAGE, filteredStudents.length)}
+              {Math.min(paginatedData.startIndex + ITEMS_PER_PAGE, filteredStudents.length)}
             </span>{" "}
             of <span className="font-medium text-foreground">{filteredStudents.length}</span> students
           </p>
@@ -125,14 +134,14 @@ function StudentManagement() {
 
         {/* Table container with slight shadow and rounded corners for better aesthetics */}
         <div className="bg-card rounded-lg border shadow-sm overflow-hidden mb-4">
-          <StudentTable students={paginatedStudents} />
+          <StudentTable students={paginatedData.paginatedStudents} />
         </div>
 
         {/* Pagination Controls */}
         {filteredStudents.length > 0 && (
           <div className="flex items-center justify-between py-2">
             <p className="text-sm text-muted-foreground">
-              Page {currentPage} of {totalPages}
+              Page {currentPage} of {paginatedData.totalPages}
             </p>
             <div className="flex space-x-2">
               <Button
@@ -146,8 +155,8 @@ function StudentManagement() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
-                disabled={currentPage === totalPages}
+                onClick={() => setCurrentPage((p) => Math.min(paginatedData.totalPages, p + 1))}
+                disabled={currentPage === paginatedData.totalPages}
               >
                 Next
               </Button>
