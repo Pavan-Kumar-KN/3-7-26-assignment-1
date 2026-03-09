@@ -1,159 +1,334 @@
-# Turborepo starter
 
-This Turborepo starter is maintained by the Turborepo core team.
+# Student Management System
 
-## Using this example
+A full-stack monorepo application for managing students, built with modern technologies using Turborepo.
 
-Run the following command:
+> **Assignment Date:** March 7, 2026
 
-```sh
-npx create-turbo@latest
+---
+
+## 🏗️ Project Structure
+
+```
+├── apps/
+│   ├── api/          # NestJS Backend API
+│   └── client/       # React Frontend
+├── packages/         # Shared packages
+├── docker-compose.yml
+└── turbo.json
 ```
 
-## What's inside?
+---
 
-This Turborepo includes the following packages/apps:
+## 🛠️ Tech Stack
 
-### Apps and Packages
+### Frontend
+| Technology | Version | Description |
+|------------|---------|-------------|
+| React | 19.x | UI Library |
+| Vite | 7.x | Build Tool |
+| Tailwind CSS | 4.x | Styling |
+| shadcn/ui | 4.x | UI Components |
+| Zustand | 5.x | State Management |
+| XLSX | 0.18.x | Excel Export |
+| Lucide React | - | Icons |
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+### Backend
+| Technology | Version | Description |
+|------------|---------|-------------|
+| NestJS | 11.x | Node.js Framework |
+| Prisma | 6.x | ORM |
+| PostgreSQL | 16 | Database |
+| Docker | - | Containerization |
+| class-validator | - | DTO Validation |
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+---
 
-### Utilities
+## 🚀 Getting Started
 
-This Turborepo has some additional tools already setup for you:
+### Prerequisites
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+- Node.js >= 18
+- pnpm 9.x
+- Docker & Docker Compose
 
-### Build
+### Installation
 
-To build all apps and packages, run the following command:
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd 3-7-26-assignment-1
+   ```
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+2. **Install dependencies**
+   ```bash
+   pnpm install
+   ```
 
-```sh
-cd my-turborepo
-turbo build
+3. **Start the database**
+   ```bash
+   docker compose up -d
+   ```
+
+4. **Set up environment variables**
+   
+   Create `apps/api/.env`:
+   ```env
+   DATABASE_URL="postgresql://postgres:postgres@localhost:5432/assignment_db"
+   ```
+
+5. **Run database migrations**
+   ```bash
+   cd apps/api
+   npx prisma migrate dev
+   npx prisma generate
+   ```
+
+6. **Start the development servers**
+   ```bash
+   # From root directory
+   pnpm dev
+   ```
+
+### Access the Application
+
+| Service | URL |
+|---------|-----|
+| Frontend | http://localhost:5173 |
+| Backend API | http://localhost:3000 |
+
+---
+
+## 📦 Database Schema
+
+### Student Model
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | Int | Primary key (auto-increment) |
+| `number` | Int | Unique student number (auto-increment) |
+| `name` | String | Student's full name |
+| `email` | String | Unique email address |
+| `age` | Int | Student's age |
+
+---
+
+## 🔌 API Endpoints
+
+### Student CRUD Operations
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `POST` | `/student` | Create a new student |
+| `GET` | `/student` | Get all students |
+| `GET` | `/student/:id` | Get a student by ID |
+| `PATCH` | `/student/:id` | Update a student |
+| `DELETE` | `/student/:id` | Delete a student |
+
+> 📄 See [API Documentation](./apps/api/doc/curl.md) for detailed curl examples.
+
+---
+
+## 🐳 Docker Commands
+
+```bash
+# Start PostgreSQL container
+docker compose up -d
+
+# Stop container
+docker compose down
+
+# View logs
+docker compose logs -f
+
+# Reset database (removes all data)
+docker compose down -v
+docker compose up -d
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+## 📜 Available Scripts
+
+### Root Level (Turborepo)
+
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start all apps in development mode |
+| `pnpm build` | Build all apps |
+| `pnpm lint` | Lint all apps |
+| `pnpm format` | Format code with Prettier |
+
+### API (`apps/api`)
+
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start API in watch mode |
+| `pnpm build` | Build for production |
+| `npx prisma studio` | Open Prisma database GUI |
+| `npx prisma migrate dev` | Run migrations |
+
+### Client (`apps/client`)
+
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start Vite dev server |
+| `pnpm build` | Build for production |
+| `pnpm preview` | Preview production build |
+
+---
+
+## 📝 Notes
+
+- Frontend and Backend are **not integrated** in this assignment
+- Each app runs independently on its own port
+- Database data persists in a Docker volume
+
+
+###  `apps/api/doc/curl.md`:
+
+# 🔌 Student API - cURL Examples
+
+Base URL: `http://localhost:3000`
+
+---
+
+## 📝 Create Student
+
+**Request:**
+```bash
+curl -X POST http://localhost:3000/student \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Doe",
+    "email": "john@example.com",
+    "age": 21
+  }'
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
+**Response:** `201 Created`
+```json
+{
+  "id": 1,
+  "number": 1,
+  "name": "John Doe",
+  "email": "john@example.com",
+  "age": 21
+}
 ```
 
-Without global `turbo`:
+---
 
-```sh
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
+## 📋 Get All Students
+
+**Request:**
+```bash
+curl -X GET http://localhost:3000/student
 ```
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
+**Response:** `200 OK`
+```json
+[
+  {
+    "id": 1,
+    "number": 1,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "age": 21
+  }
+]
 ```
 
-Without global `turbo`, use your package manager:
+---
 
-```sh
-cd my-turborepo
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
+## 🔍 Get Student by ID
+
+**Request:**
+```bash
+curl -X GET http://localhost:3000/student/1
 ```
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
+**Response:** `200 OK`
+```json
+{
+  "id": 1,
+  "number": 1,
+  "name": "John Doe",
+  "email": "john@example.com",
+  "age": 21
+}
 ```
 
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
+**Error Response:** `404 Not Found`
+```json
+{
+  "statusCode": 404,
+  "message": "Student with ID 1 not found",
+  "error": "Not Found"
+}
 ```
 
-### Remote Caching
+---
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+## ✏️ Update Student
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
+**Request:**
+```bash
+curl -X PATCH http://localhost:3000/student/1 \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "John Updated",
+    "age": 22
+  }'
 ```
 
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+**Response:** `200 OK`
+```json
+{
+  "id": 1,
+  "number": 1,
+  "name": "John Updated",
+  "email": "john@example.com",
+  "age": 22
+}
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+---
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+## 🗑️ Delete Student
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
+**Request:**
+```bash
+curl -X DELETE http://localhost:3000/student/1
 ```
 
-Without global `turbo`:
-
-```sh
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+**Response:** `200 OK`
+```json
+{
+  "id": 1,
+  "number": 1,
+  "name": "John Updated",
+  "email": "john@example.com",
+  "age": 22
+}
 ```
 
-## Useful Links
+---
 
-Learn more about the power of Turborepo:
+## ⚠️ Validation Errors
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+If you send invalid data, you'll get a `400 Bad Request`:
+
+```json
+{
+  "statusCode": 400,
+  "message": [
+    "name must be a string",
+    "email must be an email",
+    "age must be a number"
+  ],
+  "error": "Bad Request"
+}
+
+
+

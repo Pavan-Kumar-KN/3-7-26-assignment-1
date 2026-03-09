@@ -1,0 +1,15 @@
+import { IsString, IsNumber, IsNotEmpty, IsEmail } from 'class-validator';
+
+export class CreateStudentDto {
+  @IsString()
+  @IsNotEmpty()
+  name: string;
+
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  age: number;
+}
